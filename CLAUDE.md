@@ -2,7 +2,7 @@
 
 ## Project
 
-- **Name:** wsaa
+- **Name:** wsaa-node
 - **Purpose:** A Node.js client for AFIP's WSAA (Web Service de Autenticación y Autorización).
 - **Type:** library
 - **Stack:** TypeScript, Node.js

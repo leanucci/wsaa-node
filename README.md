@@ -1,4 +1,4 @@
-# wsaa
+# wsaa-node
 
 A Node.js client for AFIP's WSAA (Web Service de Autenticación y Autorización).
 
