@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 import { loadCredentials, type CredentialsConfig } from "./credentials.js";
-import { WsaaResponseError } from "./errors.js";
+import { WsaaResponseError, type WsaaSoapFaultError } from "./errors.js";
 import { signLoginTicketRequest } from "./sign.js";
 import { buildLoginCmsEnvelope, findSoapFault, parseLoginCmsResponse, type LoginTicket } from "./soap.js";
 import { buildLoginTicketRequest, type LoginTicketRequestOptions } from "./tra.js";
@@ -103,12 +103,26 @@ export class WsaaClient {
       throw new WsaaResponseError(`Cannot call WSAA at ${this.endpoint}: ${(error as Error).message}`);
     }
     if (!response.ok) {
-      const fault = body.includes("Fault") ? findSoapFault(body) : undefined;
+      const fault = body.includes("Fault") ? findFaultOrUndefined(body) : undefined;
       if (fault !== undefined) {
         throw fault;
       }
       throw new WsaaResponseError(`WSAA returned HTTP status ${response.status}.`);
     }
     return body;
+  }
+}
+
+/**
+ * Finds a SOAP fault in the body of an HTTP error response.
+ *
+ * @returns The fault error, or `undefined` if the body has no fault or is not valid XML.
+ */
+function findFaultOrUndefined(body: string): WsaaSoapFaultError | undefined {
+  try {
+    return findSoapFault(body);
+  } catch {
+    // The body is not valid XML. Use the HTTP status message.
+    return undefined;
   }
 }

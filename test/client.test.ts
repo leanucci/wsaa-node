@@ -126,6 +126,13 @@ describe("WsaaClient", () => {
     await expect(promise).rejects.toThrow("WSAA returned HTTP status 503.");
   });
 
+  it("uses the HTTP status message when an HTTP error body has the text Fault but is not valid XML", async () => {
+    const fetch = mockFetch("<html><b>Fault</html>", 500);
+    const promise = new WsaaClient(config({ fetch })).login("wsfe");
+    await expect(promise).rejects.toBeInstanceOf(WsaaResponseError);
+    await expect(promise).rejects.toThrow("WSAA returned HTTP status 500.");
+  });
+
   it("raises an error when the HTTP request fails", async () => {
     const failingFetch = vi.fn<typeof globalThis.fetch>(async () => {
       throw new TypeError("fetch failed");
