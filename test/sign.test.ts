@@ -48,6 +48,13 @@ describe("signLoginTicketRequest", () => {
     expect(forge.asn1.derToOid(forge.util.createBuffer(asn1ToDigestOid(asn1)))).toBe(forge.pki.oids.sha1);
   });
 
+  it("uses the signing time that the caller gives", () => {
+    const { xml } = buildLoginTicketRequest("wsfe");
+    const cms = signLoginTicketRequest(xml, loadCredentials(identity), new Date("2026-11-24T15:00:00Z"));
+    // The signing time is a UTCTime value in the format YYMMDDHHMMSSZ.
+    expect(Buffer.from(cms, "base64").includes(Buffer.from("261124150000Z"))).toBe(true);
+  });
+
   it.skipIf(!hasOpenssl())("makes a message with a signature that OpenSSL verifies (AC2)", () => {
     const { xml } = buildLoginTicketRequest("wsfe");
     const cms = signLoginTicketRequest(xml, loadCredentials(identity));

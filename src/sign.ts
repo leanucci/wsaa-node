@@ -25,10 +25,11 @@ const OID = {
  *
  * @param xml - The login ticket request XML document.
  * @param credentials - A certificate and a private key that match. Use {@link loadCredentials} to get them.
+ * @param signingTime - The signing time of the CMS message. The default is the time of the call.
  * @returns The CMS message, DER-encoded, then Base64-encoded.
  * @throws {@link WsaaCredentialsError} if the certificate or the private key cannot be used to sign.
  */
-export function signLoginTicketRequest(xml: string, credentials: LoadedCredentials): string {
+export function signLoginTicketRequest(xml: string, credentials: LoadedCredentials, signingTime: Date = new Date()): string {
   let certificate: forge.pki.Certificate;
   let privateKey: forge.pki.rsa.PrivateKey;
   try {
@@ -53,7 +54,7 @@ export function signLoginTicketRequest(xml: string, credentials: LoadedCredentia
     authenticatedAttributes: [
       { type: OID.contentType, value: OID.data },
       { type: OID.messageDigest },
-      { type: OID.signingTime, value: new Date() as unknown as string },
+      { type: OID.signingTime, value: signingTime as unknown as string },
     ],
   });
   signedData.sign();

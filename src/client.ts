@@ -74,6 +74,11 @@ export class WsaaClient {
    * The client builds a login ticket request, signs it, and sends it to WSAA.
    * It checks the certificate and the private key before it calls WSAA.
    *
+   * The client uses `options.now` for all times of the request: the times in the
+   * login ticket request, the CMS signing time, and the expiry check of the access ticket.
+   * If you set `now` to a time after the expiration time of the access ticket,
+   * the client throws {@link WsaaResponseError}. Set `now` only for tests.
+   *
    * @param service - The target AFIP web service, for example `wsfe`.
    * @param options - Options for the login ticket request.
    * @returns The TOKEN, the SIGN, and the times of the access ticket.
@@ -82,11 +87,13 @@ export class WsaaClient {
    * @throws {@link WsaaResponseError} if the HTTP request fails or the response is not valid.
    */
   async login(service: string, options: LoginTicketRequestOptions = {}): Promise<LoginTicket> {
-    const request = buildLoginTicketRequest(service, options);
+    // Use one clock value for all times of this request.
+    const now = options.now ?? new Date();
+    const request = buildLoginTicketRequest(service, { ...options, now });
     const credentials = loadCredentials(this.#config);
-    const cms = signLoginTicketRequest(request.xml, credentials);
+    const cms = signLoginTicketRequest(request.xml, credentials, now);
     const soapXml = await this.#post(buildLoginCmsEnvelope(cms));
-    return parseLoginCmsResponse(soapXml, options.now);
+    return parseLoginCmsResponse(soapXml, now);
   }
 
   async #post(envelope: string): Promise<string> {
