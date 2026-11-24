@@ -1,6 +1,6 @@
 {
   "name": "wsaa-node",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Node.js client for AFIP's WSAA (Web Service de Autenticación y Autorización).",
   "type": "module",
   "main": "./dist/index.js",
