@@ -6,8 +6,6 @@ The client builds a login ticket request (TRA), signs it as a CMS (PKCS#7) messa
 certificate and private key, sends it to WSAA `loginCms`, and returns the TOKEN and the SIGN.
 Other AFIP web services need these credentials.
 
-See [`specs/`](specs/) for the features that this package implements.
-
 ## Install
 
 ```sh
