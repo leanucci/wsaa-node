@@ -62,5 +62,10 @@
 - The package publishes to the public npm registry, under the name in `package.json`.
 - Publish only when the `version` field in `package.json` changes. `release.yml` does this.
   `/release` is the only thing that changes it.
-- `release.yml` publishes with npm trusted publishing (OIDC). It needs no npm token.
+- `release.yml` stages the publish with npm trusted publishing (OIDC). It needs no npm token.
+- A staged publish is not live. The owner approves it by hand, from their own machine, with
+  `npm stage approve <stage-id>`. 2FA always applies to that step. No CI identity can do it.
+  Find the stage ID with `npm stage list wsaa-node` if it is not in the job's log.
+- After the owner approves the staged publish, the owner creates the `v<version>` tag and
+  the GitHub release. `release.yml` does not do this.
 - Set `"files"` in `package.json` to the built output only, for example `["dist"]`.
