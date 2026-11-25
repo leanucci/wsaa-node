@@ -62,5 +62,5 @@
 - The package publishes to the public npm registry, under the name in `package.json`.
 - Publish only when the `version` field in `package.json` changes. `release.yml` does this.
   `/release` is the only thing that changes it.
-- Store the npm token in the `NPM_TOKEN` repo secret.
+- `release.yml` publishes with npm trusted publishing (OIDC). It needs no npm token.
 - Set `"files"` in `package.json` to the built output only, for example `["dist"]`.
